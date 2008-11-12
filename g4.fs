@@ -18,8 +18,13 @@ Code like this:
 will work now.
 
 Use >>> to force string into assembler file. 
-Example:
->>> .set pc = pc + $10
+Example:   >>> .set pc = pc + $10
+
+Use _lit: to define a literal token. Example:
+ _lit: spam 
+will expand to: 
+     .dw DOLITERAL 
+     .dw SPAM 
 
 
 Help: 
@@ -134,7 +139,10 @@ cr .( ; label ; headers ) .s
 : \ok     _; \ just for a human to see that this word was tested ok. 
 : \???    _; \ offene Frage(n). 
 : \oki?   _; \ Geht, aber ggf.immediate setzen? 
-
+: _stamp  ( -- )  time&date ." mk "  base @ >r decimal
+		 4 .r [char] . emit  2 .r [char] . emit .
+		 2 .r [char] : emit  2 .r [char] : emit . 
+		 r> base !  _;
 
 \ Often uses phrases:
 : "emit     [char] " emit   _; 
@@ -191,19 +199,19 @@ cr .( ; label ; headers ) .s
             _cr _." PFA_"     _type-label                  _; \ok 
 : _variable:    ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
-            _cr _."     .dw DO_VARIABLE " 
-            _cr _." PFA_"     _type-label                  _; \ok 
+            _cr _."     .dw PFA_DOVARIABLE " 
+            _cr _." PFA_"     _type-label                  _; \ok ??
 : _constant:    ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
-            _cr _."     .dw DO_CONSTANT " 
-            _cr _." PFA_"     _type-label                  _; \ok 
+            _cr _."     .dw PFA_DOCONSTANT " 
+            _cr _." PFA_"     _type-label                  _; \ok ??
 : _user:        ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
-            _cr _."     .dw DO_USER "
-            _cr _." PFA_"     _type-label                  _; \ok 
+            _cr _."     .dw PFA_DOUSER "
+            _cr _." PFA_"     _type-label                  _; \ok ??
 : _header       ( adr n -- ) 
             _cr _." VE_" 2dup _type-label 
-                              _type-head                   _; \ok 
+                              _type-head                   _; \ok ??
 
 
 
@@ -214,8 +222,7 @@ _cr .( ; compiling words ) _.s
 _\ That is: Create a g4 definitions and type its macro when interpreted. 
 _\ On runtime type created name. 
 
-_: :noname      create latest 
-                dup , ( save name-token) 
+_: :noname      create latest                 dup , ( save name-token) 
                 name>string  _colon:
                 [compile] immediate ]] 
                 does> ( -- adr )
@@ -255,6 +262,13 @@ _: [']          parse-word
                 _cr _."     .dw XT_DOLITERAL " 
                 _cr _."     .dw XT_" _type-name      _; immediate  \ok 
 
+_\ define a literal token, i.e. force name to be a literal.  
+_: _lit:    ( name  -- ) 
+                create latest , ( save name-token) 
+                does> ( -- adr )
+                _cr _."     .dw XT_DOLITERAL "
+                _cr _."     .dw " @  name>string _type-name  _;  \ok 
+
 _: does>        _cr _."     .dw XT_DODOES " 
                 _cr _."     .dw $940e      ; code for call" 
                 _cr _."     .dw DO_DODOES "          _; \ok 
@@ -290,8 +304,6 @@ _: Rdefer        ( n <name> -- )
 
 
 _: Edefer       _cr _."     .dw XT_EDEFEER "         _; \???
-
-
 
 _: create     ( ccc"   -- ) 
         state @ if
@@ -417,10 +429,11 @@ _\ Konvert forth stack comments to assembler comments.
 _: (        8 spaces ;emit space (emit space 
             [compile] .(  )emit space               _; _immediate \ok
 _\ Print line \-comments as well. 
-_: \       ;emit space   $0D parse type             _; _immediate \ok
+_: \       _cr ;emit space   $0D parse type             _; _immediate \ok
 
 _\ Use >>> in your forth code to force string into assembler file. 
 _: >>>       $0D parse type _; 
+
 
 
 _cr .( ; Simple words ) _.s 
@@ -524,6 +537,7 @@ _: .            _cr _."     .dw XT_DOT "             _;
 _: d.           _cr _."     .dw XT_DDOT "            _; 
 _: .r           _cr _."     .dw XT_DOTR "            _; 
 _: d.r          _cr _."     .dw XT_DDOTR "           _; 
+_: #            _cr _."     .dw XT_SHARP "           _; 
 _: ud/mod       _cr _."     .dw XT_UDSLASHMOD "      _; 
 _: dabs         _cr _."     .dw XT_DABS "            _; 
 _: dnegate      _cr _."     .dw XT_DNEGATE "         _; 
@@ -620,6 +634,12 @@ _: base         _cr _."     .dw XT_BASE "            _;
 _: state        _cr _."     .dw XT_STATE "           _; 
 _: f_cpu        _cr _."     .dw XT_F-CPU "           _; 
 
+\ added more words 
+_: fill         _cr _."     .dw XT_FILL "            _; 
+_: dummy        _cr _."     .dw XT_DUMMY "           _; 
+_: byteswap     ><                                   _; 
+
+
 
 _\ _words
-_cr .( ; finis ) _.s _cr _cr _cr 
+_cr .( ; finis ) _.s _stamp _cr _cr _cr 
