@@ -2,29 +2,30 @@
 ***************************  Macro assembler g4 *******************************
              Translating amforth source code into assembler (AVRA) 
 
-Todo: 
--- state recogniton: 
-   allot ok 
-   cells ok 
-   ?
--- test control structures 
-   do loop ... --> ok
-   labels must use names und numers within definition only. ok 
--- test if simple words should be immediate or not. 
+Use >>> to force string into assembler file. 
+Example: 
+>>> .set pc = pc + $10
+
+Use _lit: to define a literal token. 
+Example: 
+ _lit: spam 
+Will expand to: 
+     .dw XT_DOLITERAL 
+     .dw SPAM 
 
 Code like this: 
     variable foo   10 allot 
     create foo  10 cells allot 
 will work now.
 
-Use >>> to force string into assembler file. 
-Example:   >>> .set pc = pc + $10
+To calculate values inside a definition, use [ ] as usual: 
+hex  : spam  ... [ 11 22 + ] literal ...  ; 
+Will expand to:
+    ... 
+    .dw XT_DOLITERAL
+    .dw $33 
+    ... 
 
-Use _lit: to define a literal token. Example:
- _lit: spam 
-will expand to: 
-     .dw DOLITERAL 
-     .dw SPAM 
 
 
 Help: 
@@ -47,10 +48,10 @@ We do not handel the forthstyle immediate placed after those definitions jet.
 
 
 only forth also definitions
-: g4off     only forth definitions cr order ; 
+: g4off     only forth definitions ; 
 
   vocabulary g4voc
-: g4on      only forth also g4voc definitions cr order ; 
+: g4on      only forth also g4voc definitions ; 
 
 g4voc definitions  cr .( ; g4 macro definitions: ) .s 
 
@@ -65,8 +66,7 @@ g4voc definitions  cr .( ; g4 macro definitions: ) .s
 defer _comma
 
 : _]    ( -- )
-   ] g4mode @ 0= IF exit THEN 
-   BEGIN 
+   BEGIN    ] g4mode @ 0= IF exit THEN 
      BEGIN 
        bl word         \ cr ." word: " .s  ( testing) 
        dup c@
@@ -91,16 +91,20 @@ defer _comma
 : ]]          g4mode-on            _]   ; 
 : [[          g4mode-off  [compile] [   ; 
 
+
 cr .( ; some alias ) .s 
 \ Now we need some alias to build g4 in g4voc 
 \ using the forth funktion instead of the g4 funktion. 
 : _immediate    [compile] immediate ; 
 : _zero         0           ; 
+: _true         true        ; 
 : _cr           cr          ; 
 : _words        words       ; 
 \ : _parse-word   parse-word  ; 
 : _.s           .s          ; 
 : _hex          hex         ; 
+: _% 2 base !               ; 
+: _& decimal                ; 
 : _@            @           ; 
 : _.            .           ; 
 : _dup          dup         ; 
@@ -143,6 +147,7 @@ cr .( ; label ; headers ) .s
 		 4 .r [char] . emit  2 .r [char] . emit .
 		 2 .r [char] : emit  2 .r [char] : emit . 
 		 r> base !  _;
+: _stack        cr ." ; Items on stack: " .s _stamp  _; 
 
 \ Often uses phrases:
 : "emit     [char] " emit   _; 
@@ -200,18 +205,18 @@ cr .( ; label ; headers ) .s
 : _variable:    ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
             _cr _."     .dw PFA_DOVARIABLE " 
-            _cr _." PFA_"     _type-label                  _; \ok ??
+            _cr _." PFA_"     _type-label                  _; \???
 : _constant:    ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
             _cr _."     .dw PFA_DOCONSTANT " 
-            _cr _." PFA_"     _type-label                  _; \ok ??
+            _cr _." PFA_"     _type-label                  _; \???
 : _user:        ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
             _cr _."     .dw PFA_DOUSER "
-            _cr _." PFA_"     _type-label                  _; \ok ??
+            _cr _." PFA_"     _type-label                  _; \???
 : _header       ( adr n -- ) 
             _cr _." VE_" 2dup _type-label 
-                              _type-head                   _; \ok ??
+                              _type-head                   _; \???
 
 
 
@@ -315,7 +320,8 @@ _: create     ( ccc"   -- )
                 name>string 2dup _header _constant:  _cr 
         then                                         _; \ok 
 
-_cr .( ; some state smart words )
+_cr .( ; some state smart words ) 
+_zero [if]  _( turn off if amforth version 3.1 or higher.) 
 _: s"   ( ccc"   -- adr n ) 
         state @ if
           _cr _."     .dw XT_SLITERAL " 
@@ -324,7 +330,19 @@ _: s"   ( ccc"   -- adr n )
         else 
           _cr _."     .dw DOTQUOTE " 
         then                                         _; _immediate \ok
+[then]
+_true [if]  _( turn on if amforth version 3.1 or higher.) 
+_: s"   ( ccc"   -- adr n ) 
+        state @ if
+          _cr _."     .dw XT_SLITERAL " 
+    [[   $22 parse   
+          _cr _."     .dw " _dup .$$ ,emit "emit type "emit ]] 
+        else 
+          _cr _."     .dw DOTQUOTE " 
+        then                                         _; _immediate \ok
+[then]
 
+_zero [if]  _( turn off if amforth version 3.1 or higher.) 
 _: ."   ( ccc"   -- ) 
         state @ if
           _cr _."     .dw XT_SLITERAL " 
@@ -334,6 +352,18 @@ _: ."   ( ccc"   -- )
         else 
           _cr _."     .dw DOTQUOTE " 
         then                                         _; _immediate \ok
+[then]
+_true [if]  _( turn on if amforth version 3.1 or higher.) 
+_: ."   ( ccc"   -- ) 
+        state @ if
+          _cr _."     .dw XT_SLITERAL " 
+    [[   $22 parse   
+          _cr _."     .dw " _dup .$$ ,emit "emit type "emit  
+          _cr _."     .dw XT_ITYPE " ]]
+        else 
+          _cr _."     .dw DOTQUOTE " 
+        then                                         _; _immediate \ok
+[then]
 
 _: allot        ( n -- ) 
     state @ if 
@@ -350,6 +380,10 @@ _: cells        ( n -- cell*n )
         _cr _."     .dw XT_CELLS " 
     else 2* 
     then  _; 
+
+_cr .( ; g4 macro compiler ) 
+_: [        [[ g4off $5D parse evaluate g4on ]]  _; _immediate 
+_: literal  ( n ) _docomma                       _; _immediate 
 
 
 
@@ -518,10 +552,7 @@ _: code         _cr _."     .dw XT_CODE "            _;
 _: abort        _cr _."     .dw XT_ABORT "           _; 
 _: abort"       _cr _."     .dw XT_ABORTQUOTE "      _; 
 _: recurse      _cr _."     .dw XT_RECURSE "         _; 
-_: [            _cr _."     .dw XT_LBRACKET "        _; 
-_: ]            _cr _."     .dw XT_RBRACKET "        _; 
-_: literal      _cr _."     .dw XT_LITERAL "         _; 
-_: int@         _cr _."     .dw XT_INIFETCH "        _; 
+_: int@         _cr _."     .dw XT_INTFETCH "        _; 
 _: int!         _cr _."     .dw XT_INTSTORE "        _; 
 _: is           _cr _."     .dw XT_IS "              _; 
 _: words        _cr _."     .dw XT_WORDS "           _; 
@@ -642,4 +673,4 @@ _: byteswap     ><                                   _;
 
 
 _\ _words
-_cr .( ; finis ) _.s _stamp _cr _cr _cr 
+_cr .( ; finis ) _.s _cr _stamp _cr _cr _cr 
