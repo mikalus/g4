@@ -1,6 +1,12 @@
-0 [if]                                                              mk 10/2008 
+0 [if] started 10/2008 mk. 
+Browse http://www.forth-ev.de/trac/wiki for latest version.  
+
 ***************************  Macro assembler g4 *******************************
              Translating amforth source code into assembler (AVRA) 
+
+Use version switch to control amforth version.
+amforth-2.9? ( -- f ) 
+amforth-3.1? ( -- f )
 
 Use >>> to force string into assembler file. 
 Example: 
@@ -26,23 +32,19 @@ Will expand to:
     .dw $33 
     ... 
 
-
-
 Help: 
 
 Invoce g4 like this:
-    ../michael$ gforth amforth.macros 
+    ../michael$ gforth g4.fs 
     include <file>      \ <file> is your amforth sourcce code. 
 
-Or include amforth.macros in sourcefile, then run: 
+Or include g4.fs in sourcefile, then run: 
     gforth <file>.frt  >  <file>.asm 
-
-
-
 
 Work arround: 
 Use _set-immediate-on in source to force the next : definition to be immediate.
 We do not handel the forthstyle immediate placed after those definitions jet.  
+
 *******************************************************************************
 [then] 
 
@@ -54,6 +56,19 @@ only forth also definitions
 : g4on      only forth also g4voc definitions ; 
 
 g4voc definitions  cr .( ; g4 macro definitions: ) .s 
+
+\ Version control 
+&29 constant amforth-2.9 
+&31 constant amforth-3.1 
+variable g4ver  amforth-2.9 g4ver !  ( set verson !!! ) 
+
+: amforth-2.9?  ( -- f ) g4ver @ amforth-2.9 = ; 
+: amforth-3.1?  ( -- f ) g4ver @ amforth-3.1 = ; 
+: g4ver.error   
+    g4ver @ dup amforth-2.9 = swap amforth-3.1 = or 
+    if g4ver @ cr ." ; g4 version #" . 
+    else -&518 throw then ; 
+g4ver.error 
 
 
 \ Interpret forth source code, expand into assembler macros. 
@@ -321,7 +336,7 @@ _: create     ( ccc"   -- )
         then                                         _; \ok 
 
 _cr .( ; some state smart words ) 
-_zero [if]  _( turn off if amforth version 3.1 or higher.) 
+amforth-2.9? [if]  _( amforth version 2.9 or lower.) 
 _: s"   ( ccc"   -- adr n ) 
         state @ if
           _cr _."     .dw XT_SLITERAL " 
@@ -330,19 +345,7 @@ _: s"   ( ccc"   -- adr n )
         else 
           _cr _."     .dw DOTQUOTE " 
         then                                         _; _immediate \ok
-[then]
-_true [if]  _( turn on if amforth version 3.1 or higher.) 
-_: s"   ( ccc"   -- adr n ) 
-        state @ if
-          _cr _."     .dw XT_SLITERAL " 
-    [[   $22 parse   
-          _cr _."     .dw " _dup .$$ ,emit "emit type "emit ]] 
-        else 
-          _cr _."     .dw DOTQUOTE " 
-        then                                         _; _immediate \ok
-[then]
 
-_zero [if]  _( turn off if amforth version 3.1 or higher.) 
 _: ."   ( ccc"   -- ) 
         state @ if
           _cr _."     .dw XT_SLITERAL " 
@@ -353,7 +356,18 @@ _: ."   ( ccc"   -- )
           _cr _."     .dw DOTQUOTE " 
         then                                         _; _immediate \ok
 [then]
-_true [if]  _( turn on if amforth version 3.1 or higher.) 
+
+
+amforth-3.1? [if]  _( amforth version 3.1 or higher.) 
+_: s"   ( ccc"   -- adr n ) 
+        state @ if
+          _cr _."     .dw XT_SLITERAL " 
+    [[   $22 parse   
+          _cr _."     .dw " _dup .$$ ,emit "emit type "emit ]] 
+        else 
+          _cr _."     .dw DOTQUOTE " 
+        then                                         _; _immediate \ok
+
 _: ."   ( ccc"   -- ) 
         state @ if
           _cr _."     .dw XT_SLITERAL " 
