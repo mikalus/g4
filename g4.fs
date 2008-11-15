@@ -60,7 +60,7 @@ g4voc definitions  cr .( ; g4 macro definitions: ) .s
 \ Version control 
 &29 constant amforth-2.9 
 &31 constant amforth-3.1 
-variable g4ver  amforth-2.9 g4ver !  ( set verson !!! ) 
+variable g4ver  amforth-3.1 g4ver !  ( set verson !!! ) 
 
 : amforth-2.9?  ( -- f ) g4ver @ amforth-2.9 = ; 
 : amforth-3.1?  ( -- f ) g4ver @ amforth-3.1 = ; 
@@ -148,7 +148,7 @@ cr .( ; label ; headers ) .s
 
 \ Exit a g4 macro definition. 
 : ;             _cr _."     .dw XT_EXIT " 
-                0 label# !
+                0 label# ! 
                 _cr _cr [compile] [   _; immediate 
 
 
@@ -176,7 +176,6 @@ cr .( ; label ; headers ) .s
 : _type-name    ( adr n -- )    
                 0 do dup i + c@  toupper emit loop drop      _; \ok 
 : _type-label   ( adr n -- )    _type-name :emit             _; 
-: add0                          dup 1+ 1 and if _." ,0" then _; 
 
 
 \ Handle immediate words. 
@@ -185,6 +184,8 @@ cr .( ; label ; headers ) .s
 : g4immediate-off   false g4immediate !          _; 
   g4immediate-off 
 
+amforth-2.9? [if]
+: add0      dup 1+ 1 and if _." ,0" then _; 
 : .$$       ( n -- ) base @ >r hex $emit . r> base ! _; 
 : .header-count    ( n -- ) 
             g4immediate @ if 
@@ -211,6 +212,38 @@ cr .( ; label ; headers ) .s
 : _type$    ( n -- )    _cr _."     .dw " .$$                        _; 
 : _docomma  ( n -- )    _cr _."     .dw XT_DOLITERAL" _type$         _; 
  ' _docomma is _comma 
+[then]
+
+amforth-3.1? [if]
+: add0       dup 1 and if _." ,0" then _; 
+: .$$       ( n -- ) base @ >r hex $emit . r> base ! _; 
+: .header-count    ( n -- ) 
+            g4immediate @ if 
+                .$$ 
+            else 
+                $ff00 or .$$ 
+            then g4immediate-off _; 
+
+\ Build header like this one: 
+\ VE_XXX: 
+\     .dw  $ff03    ; Hbyte=$ff is regular word, $00 is immediate. 
+\     .db "xxx" 
+\     .dw VE_HEAD 
+\     .set VE_HEAD = VE_XXX 
+\ XT_XXX: 
+\     .dw DO_COLON 
+\ PFA_XXX: 
+
+\ Some often used phrases for those macros to build. 
+: _type-head    ( adr n -- ) 
+                _cr _."     .dw " dup .header-count 
+                _cr _."     .db " "emit 2dup type "emit add0 
+                _cr _."     .dw VE_HEAD" 
+                _cr _."     .set VE_HEAD = VE_" _type-name           _; \ok 
+: _type$    ( n -- )    _cr _."     .dw " .$$                        _; 
+: _docomma  ( n -- )    _cr _."     .dw XT_DOLITERAL" _type$         _; 
+ ' _docomma is _comma 
+[then]
 
 \ Different headers. 
 : _colon:       ( adr n -- ) 
@@ -363,7 +396,8 @@ _: s"   ( ccc"   -- adr n )
         state @ if
           _cr _."     .dw XT_SLITERAL " 
     [[   $22 parse   
-          _cr _."     .dw " _dup .$$ ,emit "emit type "emit ]] 
+          _cr _."     .dw " _dup .$$ 
+          _cr _."     .db " "emit type "emit ]] 
         else 
           _cr _."     .dw DOTQUOTE " 
         then                                         _; _immediate \ok
@@ -372,7 +406,8 @@ _: ."   ( ccc"   -- )
         state @ if
           _cr _."     .dw XT_SLITERAL " 
     [[   $22 parse   
-          _cr _."     .dw " _dup .$$ ,emit "emit type "emit  
+          _cr _."     .dw " _dup .$$ 
+          _cr _."     .db " "emit type "emit 
           _cr _."     .dw XT_ITYPE " ]]
         else 
           _cr _."     .dw DOTQUOTE " 
