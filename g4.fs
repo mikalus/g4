@@ -31,6 +31,7 @@ Will expand to:
     .dw XT_DOLITERAL
     .dw $33 
     ... 
+Note: Use of [ ] in g4 has to be inside of one single line so far. 
 
 Help: 
 
@@ -52,9 +53,13 @@ We do not handel the forthstyle immediate placed after those definitions jet.
 only forth also definitions
 : g4off     only forth definitions ; 
 
-  vocabulary g4voc
+  vocabulary 4thlevel 
+  vocabulary g4voc 
+
 : g4on      only forth also g4voc definitions ; 
 
+
+\ **************************************************************************
 g4voc definitions  cr .( ; g4 macro definitions: ) .s 
 
 \ Version control 
@@ -430,8 +435,15 @@ _: cells        ( n -- cell*n )
     else 2* 
     then  _; 
 
+
+\ Turn in-definition interpretation on and off 
+
+only forth also g4voc also 4thlevel definitions 
+_: ]    [compile] ]  g4on ]] _; 
+
+ g4on 
 _cr .( ; g4 macro compiler ) 
-_: [        [[ g4off $5D parse evaluate g4on ]]  _; _immediate 
+_: [        [[ g4off also 4thlevel [compile] [   _; _immediate 
 _: literal  ( n ) _docomma                       _; _immediate 
 
 
