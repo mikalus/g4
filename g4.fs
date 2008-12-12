@@ -4,6 +4,10 @@ Browse http://www.forth-ev.de/trac/wiki for latest version.
 ***************************  Macro assembler g4 *******************************
              Translating amforth source code into assembler (AVRA) 
 
+
+Postpone???
+
+
 Use version switch to control amforth version.
 amforth-2.9? ( -- f ) 
 amforth-3.1? ( -- f )
@@ -43,7 +47,7 @@ Or include g4.fs in sourcefile, then run:
     gforth <file>.frt  >  <file>.asm 
 
 Work arround: 
-Use _set-immediate-on in source to force the next : definition to be immediate.
+Use g4immediate-on in source to force the next : definition to be immediate.
 We do not handel the forthstyle immediate placed after those definitions jet.  
 
 *******************************************************************************
@@ -65,7 +69,15 @@ g4voc definitions  cr .( ; g4 macro definitions: ) .s
 \ Version control 
 &29 constant amforth-2.9 
 &31 constant amforth-3.1 
-variable g4ver  amforth-3.1 g4ver !  ( set verson !!! ) 
+variable g4ver  
+
+\ **************************************************************************
+\ **************************************************************************
+
+amforth-2.9 g4ver !  ( set verson !!! ) 
+
+\ **************************************************************************
+\ **************************************************************************
 
 : amforth-2.9?  ( -- f ) g4ver @ amforth-2.9 = ; 
 : amforth-3.1?  ( -- f ) g4ver @ amforth-3.1 = ; 
@@ -163,11 +175,11 @@ cr .( ; label ; headers ) .s
 : \ok     _; \ just for a human to see that this word was tested ok. 
 : \???    _; \ offene Frage(n). 
 : \oki?   _; \ Geht, aber ggf.immediate setzen? 
-: _stamp  ( -- )  time&date ." mk "  base @ >r decimal
+: _stampit  ( -- )  time&date ." mk "  base @ >r decimal
 		 4 .r [char] . emit  2 .r [char] . emit .
 		 2 .r [char] : emit  2 .r [char] : emit . 
 		 r> base !  _;
-: _stack        cr ." ; Items on stack: " .s _stamp  _; 
+: _stamp        cr ." ; Items on stack: " .s _stampit  cr cr _; 
 
 \ Often uses phrases:
 : "emit     [char] " emit   _; 
@@ -250,7 +262,7 @@ amforth-3.1? [if]
  ' _docomma is _comma 
 [then]
 
-\ Different headers. 
+\ Different header parts. 
 : _colon:       ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
             _cr _."     .dw DO_COLON "
@@ -282,14 +294,14 @@ _\ On runtime type created name.
 
 _: :noname      create latest                 dup , ( save name-token) 
                 name>string  _colon:
-                [compile] immediate ]] 
+                ( [compile] immediate ) ]] 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \oki?
 
 _: :            create latest 
                 dup , ( save name-token) 
                 name>string 2dup _header _colon:
-                [compile] immediate ]] 
+                ( [compile] immediate ) ]] 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \oki?
 
@@ -298,7 +310,7 @@ _: constant     ( n -- )
                 dup , ( save name-token) 
                 _cr _." ; defining a constant: " 
                 name>string 2dup _header _variable:  ( n -- ) _type$ _cr 
-                [compile] immediate 
+                ( [compile] immediate ) 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \ok 
 
@@ -308,7 +320,7 @@ _: variable     create latest
                 name>string 2dup _header _user: 
                 _cr _."     .dw heap "
                 _cr _."     .set heap = heap + CELLSIZE " _cr 
-                [compile] immediate 
+                ( [compile] immediate ) 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \ok 
 
@@ -320,16 +332,18 @@ _: [']          parse-word
                 _cr _."     .dw XT_DOLITERAL " 
                 _cr _."     .dw XT_" _type-name      _; immediate  \ok 
 
+_: is           parse-word 
+                _cr _."     .dw XT_DOLITERAL " 
+                _cr _."     .dw XT_" _type-name      
+                _cr _."     .dw XT_DEFERSTORE"       _; immediate  \ok 
+
+
 _\ define a literal token, i.e. force name to be a literal.  
 _: _lit:    ( name  -- ) 
                 create latest , ( save name-token) 
                 does> ( -- adr )
                 _cr _."     .dw XT_DOLITERAL "
                 _cr _."     .dw " @  name>string _type-name  _;  \ok 
-
-_: does>        _cr _."     .dw XT_DODOES " 
-                _cr _."     .dw $940e      ; code for call" 
-                _cr _."     .dw DO_DODOES "          _; \ok 
 
 _: user       ( ccc" n --- )
         state @ if
@@ -360,18 +374,22 @@ _: Rdefer        ( n <name> -- )
                 _cr _."     .dw XT_RDEFERSTORE " _cr 
     then                                            _; \??? 
 
-
 _: Edefer       _cr _."     .dw XT_EDEFEER "         _; \???
 
 _: create     ( ccc"   -- ) 
-        state @ if
-                _cr _."     .dw XT_CREATE "
-        else
                 create latest 
                 dup , ( save name-token) 
                 _cr _." ; create: " 
                 name>string 2dup _header _constant:  _cr 
-        then                                         _; \ok 
+                does> ( -- adr )
+                _cr _."     .dw XT_" @  name>string _type-name  _; \oki?
+
+_: does>        _cr _."     .dw XT_DODOES " 
+                _cr _."     .dw $940e      ; code for call" 
+                _cr _."     .dw DO_DODOES "          _; \ok 
+
+
+
 
 _cr .( ; some state smart words ) 
 amforth-2.9? [if]  _( amforth version 2.9 or lower.) 
@@ -381,7 +399,7 @@ _: s"   ( ccc"   -- adr n )
     [[   $22 parse   
           _cr _."     .db " _dup .$$ ,emit "emit type "emit ]] 
         else 
-          _cr _."     .dw DOTQUOTE " 
+          _cr _."     .dw SQUOTE " 
         then                                         _; _immediate \ok
 
 _: ."   ( ccc"   -- ) 
@@ -404,7 +422,7 @@ _: s"   ( ccc"   -- adr n )
           _cr _."     .dw " _dup .$$ 
           _cr _."     .db " "emit type "emit ]] 
         else 
-          _cr _."     .dw DOTQUOTE " 
+          _cr _."     .dw SQUOTE " 
         then                                         _; _immediate \ok
 
 _: ."   ( ccc"   -- ) 
@@ -415,7 +433,7 @@ _: ."   ( ccc"   -- )
           _cr _."     .db " "emit type "emit 
           _cr _."     .dw XT_ITYPE " ]]
         else 
-          _cr _."     .dw DOTQUOTE " 
+          _cr _."     .dw XT_DOTSTRING " 
         then                                         _; _immediate \ok
 [then]
 
@@ -434,6 +452,19 @@ _: cells        ( n -- cell*n )
         _cr _."     .dw XT_CELLS " 
     else 2* 
     then  _; 
+
+_: ,            ( n -- ) 
+    state @ if 
+        _cr _."     .dw XT_COMMA " 
+    else
+        _cr _."     .dw " .$$ 
+    then  _; 
+
+_: postpone ( -- )  ( ok mk30.11.08) 
+    bl word find 0< 
+    if    _cr _."     .dw XT_COMPILE "  execute 
+    else  state @ >r  false state ! execute r> state ! 
+    then _; _immediate  
 
 
 \ Turn in-definition interpretation on and off 
@@ -573,14 +604,14 @@ _: u>           _cr _."     .dw XT_UGREATER "        _;
 _: u<           _cr _."     .dw XT_ULESS "           _; 
 _: 0>           _cr _."     .dw XT_ZEROGRATER "      _; 
 _: 0<           _cr _."     .dw XT_ZEROLESS "        _; 
-_: >            _cr _."     .dw XT_GRATER "          _; 
+_: >            _cr _."     .dw XT_GREATER "          _; 
 _: <            _cr _."     .dw XT_LESS "            _; 
 _: 0=           _cr _."     .dw XT_ZEROEQUAL "       _; 
 _: =            _cr _."     .dw XT_EQUAL "           _; 
 _: <>           _cr _."     .dw XT_NOTEQUAL "        _; 
-_: r@           _cr _."     .dw XT_R-FETCH "         _; 
-_: >r           _cr _."     .dw XT_TO-R "            _; 
-_: r>           _cr _."     .dw XT_R-FROM "          _; 
+_: r@           _cr _."     .dw XT_R_FETCH "         _; 
+_: >r           _cr _."     .dw XT_TO_R "            _; 
+_: r>           _cr _."     .dw XT_R_FROM "          _; 
 _: rot          _cr _."     .dw XT_ROT "             _; 
 _: drop         _cr _."     .dw XT_DROP "            _; 
 _: over         _cr _."     .dw XT_OVER "            _; 
@@ -597,7 +628,7 @@ _: execute      _cr _."     .dw XT_EXECUTE "         _;
 _: exit         _cr _."     .dw XT_EXIT "            _; 
 _: -int         _cr _."     .dw XT_MINUSINT "        _; 
 _: +int         _cr _."     .dw XT_PLUSINT "         _; 
-_: postpone     _cr _."     .dw XT_POSTPONE "        _; 
+
 _: .errorx      _cr _."     .dw XT_DOTERRORX "       _; 
 _: xoff         _cr _."     .dw XT_XOFF "            _; 
 _: xon          _cr _."     .dw XT_XON "             _; 
@@ -615,7 +646,7 @@ _: abort"       _cr _."     .dw XT_ABORTQUOTE "      _;
 _: recurse      _cr _."     .dw XT_RECURSE "         _; 
 _: int@         _cr _."     .dw XT_INTFETCH "        _; 
 _: int!         _cr _."     .dw XT_INTSTORE "        _; 
-_: is           _cr _."     .dw XT_IS "              _; 
+
 _: words        _cr _."     .dw XT_WORDS "           _; 
 _: .s           _cr _."     .dw XT_DOTS "            _; 
 _: applturnkey  _cr _."     .dw XT_APPLTURNKEY "     _; 
@@ -707,7 +738,7 @@ _: edp          _cr _."     .dw XT_EDP "             _;
 _: bl           _cr _."     .dw XT_BL "              _; 
 _: hex          _cr _."     .dw XT_HEX "             _; 
 _: decimal      _cr _."     .dw XT_DECIMAL "         _; 
-_: ,            _cr _."     .dw XT_COMMA "           _; 
+
 _: compile      _cr _."     .dw XT_COMPILE "         _; \???
 _: here         _cr _."     .dw XT_HERE "            _; 
 _: head         _cr _."     .dw XT_HEAD "            _; 
@@ -734,4 +765,4 @@ _: byteswap     ><                                   _;
 
 
 _\ _words
-_cr .( ; finis ) _.s _cr _stamp _cr _cr _cr 
+_cr .( ; finis ) _stamp 
