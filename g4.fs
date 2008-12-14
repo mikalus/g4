@@ -317,7 +317,7 @@ _: constant     ( n -- )
 _: variable     create latest 
                 dup , ( save name-token) 
                 _cr _." ; defining a variable: " 
-                name>string 2dup _header _user: 
+                name>string 2dup _header _variable: 
                 _cr _."     .dw heap "
                 _cr _."     .set heap = heap + CELLSIZE " _cr 
                 ( [compile] immediate ) 
