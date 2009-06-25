@@ -78,7 +78,7 @@ variable g4ver
 \ **************************************************************************
 \ **************************************************************************
 
-amforth-2.9 g4ver !  ( set verson !!! ) 
+amforth-3.1 g4ver !  ( set verson !!! ) 
 
 \ **************************************************************************
 \ **************************************************************************
@@ -293,7 +293,7 @@ _\ Make all following words immediate, so they will execute while compiling.
 _\ This makes them akt as an assembler macro.
 
 _cr .( ; compiling words ) _.s  
-_\ That is: Create a g4 definitions and type its macro when interpreted. 
+_\ That is: Create a g4 definition and type its macro when interpreted. 
 _\ On runtime type created name. 
 
 _: :noname      create latest                 dup , ( save name-token) 
@@ -387,6 +387,8 @@ _: create     ( ccc"   -- )
                 name>string 2dup _header _constant:  _cr 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \oki?
+
+_: xt_create    _cr _."     .dw XT_CREATE " _; 
 
 _: does>        _cr _."     .dw XT_DODOES " 
                 _cr _."     .dw $940e      ; code for call" 
@@ -765,7 +767,10 @@ _: f_cpu        _cr _."     .dw XT_F-CPU "           _;
 _: fill         _cr _."     .dw XT_FILL "            _; 
 _: dummy        _cr _."     .dw XT_DUMMY "           _; 
 _: byteswap     ><                                   _; 
-
+_: get-order    _cr _."     .dw XT_GET_ORDER "       _; 
+_: get-current  _cr _."     .dw XT_GET_CURRENT "     _; 
+_: set-order    _cr _."     .dw XT_SET_ORDER "       _; 
+_: set-current  _cr _."     .dw XT_SET_CURRENT "     _; 
 
 
 _\ _words
