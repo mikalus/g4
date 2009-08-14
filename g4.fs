@@ -78,7 +78,7 @@ variable g4ver
 \ **************************************************************************
 \ **************************************************************************
 
-amforth-3.1 g4ver !  ( set verson !!! ) 
+amforth-2.9 g4ver !  ( set verson !!! ) 
 
 \ **************************************************************************
 \ **************************************************************************
@@ -180,8 +180,10 @@ cr .( ; label ; headers ) .s
 : \???    _; \ offene Frage(n). 
 : \oki?   _; \ Geht, aber ggf.immediate setzen? 
 : _stampit  ( -- )  time&date ." mk "  base @ >r decimal
-		 4 .r [char] . emit  2 .r [char] . emit .
-		 2 .r [char] : emit  2 .r [char] : emit . 
+		 >r >r 2 .r [char] . emit  
+            r> 2 .r [char] . emit  
+            r> 4 .r space 
+		 2 .r [char] : emit  2 .r [char] : emit 2 .r 
 		 r> base !  _;
 : _stamp        cr ." ; Items on stack: " .s _stampit  cr cr _; 
 
@@ -654,7 +656,7 @@ _: int@         _cr _."     .dw XT_INTFETCH "        _;
 _: int!         _cr _."     .dw XT_INTSTORE "        _; 
 
 _: words        _cr _."     .dw XT_WORDS "           _; 
-_: .s           _cr _."     .dw XT_DOTS "            _; 
+_: .s           _cr _."     .dw XT_DOT_S "           _; 
 _: applturnkey  _cr _."     .dw XT_APPLTURNKEY "     _; 
 _: .$           _cr _."     .dw XT_DOTDOLLAR "       _; 
 _: u0.r         _cr _."     .dw XT_UZERODOTR "       _; 
