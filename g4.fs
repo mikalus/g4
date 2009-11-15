@@ -5,7 +5,10 @@ Browse http://www.forth-ev.de/trac/wiki for latest version.
              Translating amforth source code into assembler (AVRA) 
 
 
-Postpone???
+Postpone    test it - is ok?
+create has a bug?  mk2009-11-15
+
+
 
 
 Use version switch to control amforth version.
