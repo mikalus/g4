@@ -72,13 +72,13 @@ g4voc definitions  cr .( ; g4 macro definitions: ) .s
 
 \ Version control 
 &29 constant amforth-2.9 
-&31 constant amforth-3.1 
+&31 constant amforth-3.1
 variable g4ver  
 
 \ **************************************************************************
 \ **************************************************************************
 
-amforth-2.9 g4ver !  ( set verson !!! ) 
+amforth-3.1 g4ver !  ( set verson !!! ) 
 
 \ **************************************************************************
 \ **************************************************************************
@@ -502,12 +502,12 @@ _: leave        _cr _."     .dw XT_LEAVE "           _; \ok
 _: +loop        _( xo x1 -- ) 
                 _cr _."     .dw XT_DOPLUSLOOOP " 
                 _cr _."     .dw PFA_"  _label _. 
-                _cr _." PFA_" _label _.                 _; _immediate \ok 
+                _cr _." PFA_" _label 1 .r :emit            _; _immediate \ok 
 
 _: loop         _( x0 x1 - ) 
                 _cr _."     .dw XT_DOLOOP " 
                 _cr _."     .dw PFA_" _label  _. 
-                _cr _." PFA_" _label  _.                 _; _immediate \ok 
+                _cr _." PFA_" _label  1 .r :emit           _; _immediate \ok 
 
 _: do           _( -- x0 x1 ) 
                 _cr _."     .dw XT_DODO" 
