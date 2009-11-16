@@ -10,7 +10,6 @@ create has a bug?  mk2009-11-15
 
 
 
-
 Use version switch to control amforth version.
 amforth-2.9? ( -- f ) 
 amforth-3.1? ( -- f )
@@ -138,9 +137,11 @@ cr .( ; some alias ) .s
 : _zero         0           ; 
 : _true         true        ; 
 : _cr           cr          ; 
+: __cr           cr          ; immediate
 : _words        words       ; 
 \ : _parse-word   parse-word  ; 
 : _.s           .s          ; 
+: __.s           .s          ; immediate 
 : _hex          hex         ; 
 : _% 2 base !               ; 
 : _& decimal                ; 
@@ -355,19 +356,18 @@ _: _lit:    ( name  -- )
                 _cr _."     .dw " @  name>string _type-name  _;  \ok 
 
 _: user       ( ccc" n --- )
-        state @ if
-                _cr _."     .dw XT_USER "
-        else
-                create latest 
+                create latest dup ,               __cr .( user:) __.s
                 _cr _." ; user variable: " 
                 name>string  2dup _header 
                 _cr _." XT_" 2dup _type-label 
                 _cr _."     .dw PFA_DOUSER " 
                 _cr _." PFA_"     _type-label 
-                _cr _."     .dw " .$$ _cr 
-        then                                        _; \ok 
-_\ creates a RAM based defer vector
+                _cr _."     .dw " .$$ _cr         __cr .( user:) __.s
+                does> ( -- adr )
+                _cr _."     .dw XT_" @  name>string _type-name  _; \ok 
 
+
+_\ creates a RAM based defer vector
 _: Rdefer        ( n <name> -- ) 
     state @ if 
         _cr _."     .dw XT_RDEFER " 
