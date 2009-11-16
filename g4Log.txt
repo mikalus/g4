@@ -1,0 +1,80 @@
+PowerBook:~/g4 michael$  svn ci -m "user"  2009-11-16
+
+PowerBook:~/g4 michael$  svn ci -m "loop +loop ( bugreport) "
+Sending        g4.fs
+Transmitting file data .
+Committed revision 1501.
+
+PowerBook:~/g4 michael$  svn ci -m "fixed dot_s"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 1392.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "added: set-order get-order set-current get-current"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 1288.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "adjusted: greaterzero lesszero sp_fetch sp_store" 
+Sending        g4.fs
+Transmitting file data .
+Committed revision 1226.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~ michael$ cd g4
+PowerBook:~/g4 michael$ svn ci -m "added note: Nno character handling in names"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 1138.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~ michael$ cd g4
+PowerBook:~/g4 michael$ svn ci -m "fixed: variable"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 942.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "debugded: ['] is "
+Sending        g4.fs
+Transmitting file data .
+Committed revision 922.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "in-definition calculation on/off with [ ] ov
+er several lines"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 903.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "added amforth-3.1 header dotquote squote"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 902.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m " amforth version switch included "
+Sending        g4.fs
+Transmitting file data .
+Committed revision 900.
+PowerBook:~/g4 michael$ 
+
+PowerBook:~/g4 michael$ svn ci -m "[ ] literal, amforth3.1 strings"
+Sending        g4.fs
+Transmitting file data .
+Committed revision 900.
+PowerBook:~/g4 michael$ 
+
+( Um svn abzubrechen: )
+^C
+svn: Caught signal
+PowerBook:~ michael$ 
+PowerBook:~ michael$ svn co http://www.forth-ev.de/repos/g4
+A    g4/g4.fs
+Checked out revision 898.
+PowerBook:~ michael$ cd g4
+PowerBook:~/g4 michael$ ls
+g4.fs
