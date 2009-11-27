@@ -1,3 +1,10 @@
+
+PowerBook:~/g4 michael$ svn ci -m " g4Log.txt "
+Adding  (bin)  Version Control with Subversion.webarchive
+Adding         g4Log.txt
+Transmitting file data ..
+Committed revision 1505.
+
 PowerBook:~/g4 michael$  svn ci -m "user"  2009-11-16
 
 PowerBook:~/g4 michael$  svn ci -m "loop +loop ( bugreport) "

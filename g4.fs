@@ -4,7 +4,17 @@ Browse http://www.forth-ev.de/trac/wiki for latest version.
 ***************************  Macro assembler g4 *******************************
              Translating amforth source code into assembler (AVRA) 
 
+Bugreport:
+A value gives XT_<value> which is ok.
+But the phrase  to <value>  is not ok.
+There 'to' is immediate and the following value must be in the wordlist, where
+to will find out its address. That does not work in this forth-to assembler
+converter, because the address of the value is in eeprom and unknown to g4.
+You have to code those phrases manualy.
 
+
+
+todo:
 Postpone    test it - is ok?
 create has a bug?  mk2009-11-15
 
@@ -690,7 +700,7 @@ _: defer@       _cr _."     .dw XT_DEFEREFETCH "     _;
 _: defer!       _cr _."     .dw XT_DEFERESTORE "     _; 
 _: icompare     _cr _."     .dw XT_ICOMPARE "        _; 
 _: find         _cr _."     .dw XT_FIND "            _; 
-_: to           _cr _."     .dw XT_TO "              _; 
+\ _: to           _cr _."     .dw XT_TO "              _; does not work this way
 _: value        _cr _."     .dw XT_VALUE "           _; 
 _: unused       _cr _."     .dw XT_UNUSED "          _; 
 _: noop         _cr _."     .dw XT_NOOP "            _; 
