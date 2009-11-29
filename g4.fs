@@ -468,7 +468,6 @@ _: allot        ( n -- )
     then  _; 
 
 _: cells        ( n -- cell*n )
-                _cr _."     .dw XT_CELLS " 
     state @ if 
         _cr _."     .dw XT_CELLS " 
     else 2* 
