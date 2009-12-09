@@ -512,7 +512,7 @@ _: ?do          _( --- x0 x1 )
 _: leave        _cr _."     .dw XT_LEAVE "           _; \ok 
 
 _: +loop        _( xo x1 -- ) 
-                _cr _."     .dw XT_DOPLUSLOOOP " 
+                _cr _."     .dw XT_DOPLUSLOOP " 
                 _cr _."     .dw PFA_"  _label _. 
                 _cr _." PFA_" _label 1 .r :emit            _; _immediate \ok 
 
@@ -626,7 +626,7 @@ _: 0>           _cr _."     .dw XT_GREATERZERO "      _;
 _: 0<           _cr _."     .dw XT_LESSZERO "        _; 
 _: >            _cr _."     .dw XT_GREATER "         _; 
 _: <            _cr _."     .dw XT_LESS "            _; 
-_: 0=           _cr _."     .dw XT_ZEROEQUAL "       _; 
+_: 0=           _cr _."     .dw XT_EQUALZERO "       _; 
 _: =            _cr _."     .dw XT_EQUAL "           _; 
 _: <>           _cr _."     .dw XT_NOTEQUAL "        _; 
 _: r@           _cr _."     .dw XT_R_FETCH "         _; 
