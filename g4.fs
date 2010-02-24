@@ -785,6 +785,11 @@ _: get-order    _cr _."     .dw XT_GET_ORDER "       _;
 _: get-current  _cr _."     .dw XT_GET_CURRENT "     _; 
 _: set-order    _cr _."     .dw XT_SET_ORDER "       _; 
 _: set-current  _cr _."     .dw XT_SET_CURRENT "     _; 
+_: only         _cr _."     .dw XT_ONLY "            _; 
+_: definitions  _cr _."     .dw XT_DEFINITIONS "     _; 
+_: forth        _cr _."     .dw XT_FORTH "           _; 
+_: also         _cr _."     .dw XT_ALSO "            _; 
+_: show-wordlist _cr _."    .dw XT_SHOWWORDLIST "    _; 
 
 
 _\ _words

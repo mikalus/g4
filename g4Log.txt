@@ -1,3 +1,10 @@
+PowerBook:~/g4 michael$ svn ci -m " 0= fixed"         
+Sending        g4.fs
+Sending        g4Log.txt
+Transmitting file data ..
+Committed revision 1525.
+PowerBook:~/g4 michael$ 
+
 PowerBook:~/g4 michael$ svn ci -m "debuged: cells" 
 Sending        g4.fs
 Sending        g4Log.txt
