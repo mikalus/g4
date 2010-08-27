@@ -55,7 +55,7 @@ If you use characters like ( ) ? ! @ ; , : in forth names you have to change the
 
 Help: 
 
-Invoce g4 like this:
+Invoke g4 like this:
     ../michael$ gforth g4.fs 
     include <file>      \ <file> is your amforth sourcce code. 
 
@@ -188,11 +188,11 @@ cr .( ; label ; headers ) .s
 
 
 
-\ This I found usefull while in debugging g4.
+\ This I found usefull while debugging g4.
 : .. bye  _; \ I use this *very* often to leave gforth and recompile my source.
 : \ok     _; \ just for a human to see that this word was tested ok. 
-: \???    _; \ offene Frage(n). 
-: \oki?   _; \ Geht, aber ggf.immediate setzen? 
+: \???    _; \ open item indicator. 
+: \oki?   _; \ ok, but should it be immediate? 
 : _stampit  ( -- )  time&date ." mk "  base @ >r decimal
 		 >r >r 2 .r [char] . emit  
             r> 2 .r [char] . emit  
@@ -282,7 +282,7 @@ amforth-3.1? [if]
  ' _docomma is _comma 
 [then]
 
-\ Different header parts. 
+\ more header. 
 : _colon:       ( adr n -- ) 
             _cr _." XT_" 2dup _type-label 
             _cr _."     .dw DO_COLON "
@@ -304,12 +304,8 @@ amforth-3.1? [if]
                               _type-head                   _; \???
 
 
-
-_\ Make all following words immediate, so they will execute while compiling. 
-_\ This makes them akt as an assembler macro.
-
 _cr .( ; compiling words ) _.s  
-_\ That is: Create a g4 definition and type its macro when interpreted. 
+_\ Create a g4 definition and type its macro when interpreted. 
 _\ On runtime type created name. 
 
 _: :noname      create latest                 dup , ( save name-token) 
@@ -580,6 +576,8 @@ _: \       _cr ;emit space   $0D parse type             _; _immediate \ok
 _\ Use >>> in your forth code to force string into assembler file. 
 _: >>>       $0D parse type _; 
 
+_\ Or use .( xxx ) to include text as is. 
+
 
 
 _cr .( ; Simple words ) _.s 
@@ -597,8 +595,8 @@ _: i!           _cr _."     .dw XT_ISTORE "          _;
 _: i@           _cr _."     .dw XT_IFETCH "          _; 
 _: unloop       _cr _."     .dw XT_UNLOOP "          _; 
 _: i            _cr _."     .dw XT_I "               _; 
-_: sp!          _cr _."     .dw XT_SP_STORE "         _; 
-_: sp@          _cr _."     .dw XT_SP_FETCH "         _; 
+_: sp!          _cr _."     .dw XT_SP_STORE "        _; 
+_: sp@          _cr _."     .dw XT_SP_FETCH "        _; 
 _: rp!          _cr _."     .dw XT_RPSTORE "         _; 
 _: rp@          _cr _."     .dw XT_RPFETCH "         _; 
 _: +!           _cr _."     .dw XT_PLUSSTORE "       _; 
@@ -662,7 +660,7 @@ _: -jtag        _cr _."     .dw XT_MINUSJTAG "       _;
 _: end-code     _cr _."     .dw XT_ENDCODE "         _; 
 _: code         _cr _."     .dw XT_CODE "            _; 
 _: abort        _cr _."     .dw XT_ABORT "           _; 
-_: abort"       _cr _."     .dw XT_ABORTQUOTE "      _; 
+_\ _: abort"       _cr _."     .dw XT_ABORTQUOTE "      _; 
 _: recurse      _cr _."     .dw XT_RECURSE "         _; 
 _: int@         _cr _."     .dw XT_INTFETCH "        _; 
 _: int!         _cr _."     .dw XT_INTSTORE "        _; 
@@ -699,7 +697,7 @@ _: defer@       _cr _."     .dw XT_DEFEREFETCH "     _;
 _: defer!       _cr _."     .dw XT_DEFERESTORE "     _; 
 _: icompare     _cr _."     .dw XT_ICOMPARE "        _; 
 _: find         _cr _."     .dw XT_FIND "            _; 
-\ _: to           _cr _."     .dw XT_TO "              _; does not work this way
+_\ _: to           _cr _."     .dw XT_TO "              _; does not work this way
 _: value        _cr _."     .dw XT_VALUE "           _; 
 _: unused       _cr _."     .dw XT_UNUSED "          _; 
 _: noop         _cr _."     .dw XT_NOOP "            _; 
@@ -790,7 +788,7 @@ _: definitions  _cr _."     .dw XT_DEFINITIONS "     _;
 _: forth        _cr _."     .dw XT_FORTH "           _; 
 _: also         _cr _."     .dw XT_ALSO "            _; 
 _: show-wordlist _cr _."    .dw XT_SHOWWORDLIST "    _; 
-
+_: pick         _cr _."     .dw XT_PICK "            _; 
 
 _\ _words
 _cr .( ; finis ) _stamp 
