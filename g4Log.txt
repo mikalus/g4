@@ -1,3 +1,11 @@
+PowerBook:~ michael$ cd g4
+PowerBook:~/g4 michael$ svn ci -m " pick"
+Sending        g4.fs
+Sending        g4Log.txt
+Transmitting file data ..
+Committed revision 1733.
+PowerBook:~/g4 michael$ 
+
 PowerBook:~/g4 michael$ svn ci -m " only forth also definitions show-wordlist"
 Sending        g4.fs
 Sending        g4Log.txt
