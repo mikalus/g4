@@ -329,7 +329,7 @@ _cr .( ; compiling words ) _.s
 _\ Create a g4 definition and type its macro when interpreted. 
 _\ On runtime type created name. 
 
-_: :noname      create latest                 dup , ( save name-token) 
+_: :noname      create latest                     \ ?? so nicht.                dup , ( save name-token) 
                 name>string  _colon:
                 ( [compile] immediate ) ]] 
                 does> ( -- adr )
@@ -383,13 +383,13 @@ _: _lit:    ( name  -- )
                 _cr _."     .dw " @  name>string _type-name  _;  \ok 
 
 _: user       ( ccc" n --- )
-                create latest dup ,               __cr .( user:) __.s
+                create latest dup , 
                 _cr _." ; user variable: " 
                 name>string  2dup _header 
                 _cr _." XT_" 2dup _type-label 
                 _cr _."     .dw PFA_DOUSER " 
                 _cr _." PFA_"     _type-label 
-                _cr _."     .dw " .$$ _cr         __cr .( user:) __.s
+                _cr _."     .dw " .$$ _cr 
                 does> ( -- adr )
                 _cr _."     .dw XT_" @  name>string _type-name  _; \ok 
 
@@ -606,8 +606,8 @@ _\ And here are all other simple words, they just type their XT_label.
 _\ Some amforth words missing? Go ahead and include them. 
 _: d2/          _cr _."     .dw XT_D2SLASH "         _; 
 _: s>d          _cr _."     .dw XT_STOD "            _; 
-_: up!          _cr _."     .dw XT_UPSTORE "         _; 
-_: up@          _cr _."     .dw XT_UPFETCH "         _; 
+_: up!          _cr _."     .dw XT_UP_STORE "         _; 
+_: up@          _cr _."     .dw XT_UP_FETCH "         _; 
 _: 0            _cr _."     .dw XT_ZERO "            _; 
 _: 1ms          _cr _."     .dw XT_1MS "             _; 
 _: ><           _cr _."     .dw XT_BYTESWAP "        _; 
@@ -618,8 +618,8 @@ _: unloop       _cr _."     .dw XT_UNLOOP "          _;
 _: i            _cr _."     .dw XT_I "               _; 
 _: sp!          _cr _."     .dw XT_SP_STORE "        _; 
 _: sp@          _cr _."     .dw XT_SP_FETCH "        _; 
-_: rp!          _cr _."     .dw XT_RPSTORE "         _; 
-_: rp@          _cr _."     .dw XT_RPFETCH "         _; 
+_: rp!          _cr _."     .dw XT_RP_STORE "        _; 
+_: rp@          _cr _."     .dw XT_RP_FETCH "        _; 
 _: +!           _cr _."     .dw XT_PLUSSTORE "       _; 
 _: rshift       _cr _."     .dw XT_RSHIFT "          _; 
 _: lshift       _cr _."     .dw XT_LSHIFT "          _; 
@@ -714,8 +714,8 @@ _: rx0          _cr _."     .dw XT_RX0 "             _;
 _: d>s          _cr _."     .dw XT_D2S "             _; 
 _: j            _cr _."     .dw XT_J "               _; 
 _: *            _cr _."     .dw XT_STAR "            _; 
-_: defer@       _cr _."     .dw XT_DEFEREFETCH "     _; 
-_: defer!       _cr _."     .dw XT_DEFERESTORE "     _; 
+_: defer@       _cr _."     .dw XT_DEFERFETCH "     _; 
+_: defer!       _cr _."     .dw XT_DEFERSTORE "     _; 
 _: icompare     _cr _."     .dw XT_ICOMPARE "        _; 
 _: find         _cr _."     .dw XT_FIND "            _; 
 _\ _: to           _cr _."     .dw XT_TO "              _; does not work this way
