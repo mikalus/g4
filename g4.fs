@@ -172,10 +172,11 @@ cr .( ; some alias ) .s
 : _words        words       ; 
 \ : _parse-word   parse-word  ; 
 : _.s           .s          ; 
-: __.s           .s          ; immediate 
+: __.s           .s         ; immediate 
 : _hex          hex         ; 
-: _% 2 base !               ; 
-: _& decimal                ; 
+: _$            hex         ; 
+: _%            2 base !    ; 
+: _&            decimal     ; 
 : _@            @           ; 
 : _.            .           ; 
 : _dup          dup         ; 
