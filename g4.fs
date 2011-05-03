@@ -811,6 +811,7 @@ _: forth        _cr _."     .dw XT_FORTH "           _;
 _: also         _cr _."     .dw XT_ALSO "            _; 
 _: show-wordlist _cr _."    .dw XT_SHOWWORDLIST "    _; 
 _: pick         _cr _."     .dw XT_PICK "            _; 
+_: within       _cr _."     .dw XT_WITHIN "          _; 
 
 _\ _words
 _cr .( ; finis ) _stamp 

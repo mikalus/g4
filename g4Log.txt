@@ -1,3 +1,10 @@
+PowerBook:~/g4 michael$ svn ci -m "added: _$"
+Sending        g4.fs
+Sending        g4Log.txt
+Transmitting file data ..
+Committed revision 1795.
+PowerBook:~/g4 michael$ 
+
 PowerBook:~/g4 michael$ svn ci -m "fixed: rp_store rp_fetch up_fetch up_store deferfetch deferstore"
 Sending        g4.fs
 Sending        g4Log.txt
