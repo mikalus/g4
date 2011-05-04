@@ -590,8 +590,14 @@ _: immediate
 
 
 _\ Konvert forth stack comments to assembler comments. 
-_: (        8 spaces ;emit space (emit space 
+_\ _: (        8 spaces ;emit space (emit space 
+_\             [compile] .(  )emit space               _; _immediate \ok
+_: (        cr ;emit space (emit space 
             [compile] .(  )emit space               _; _immediate \ok
+_: R(       cr ;emit space _." R( " 
+            [compile] .(  )emit space               _; _immediate \ok
+
+
 _\ Print line \-comments as well. 
 _: \       _cr ;emit space   $0D parse type             _; _immediate \ok
 

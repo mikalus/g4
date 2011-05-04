@@ -1,3 +1,10 @@
+PowerBook:~/g4 michael$ svn ci -m "added: within"
+Sending        g4.fs
+Sending        g4Log.txt
+Transmitting file data ..
+Committed revision 1909.
+PowerBook:~/g4 michael$ 
+
 PowerBook:~/g4 michael$ svn ci -m "added: _$"
 Sending        g4.fs
 Sending        g4Log.txt
