@@ -68,7 +68,7 @@ If you use characters like ( ) ? ! @ ; , : in forth names you have to change the
 
 NOTES:
 Immediate words:
-Use g4immediate-on in your source BEFOR the next : definition that has to beimmediate. G4 does not handel the forthstyle immediate following a definitions jet.
+Use g4immediate-on in your source BEFOR the next : definition that has to be immediate. G4 does not handel the forthstyle immediate following a definitions jet.
 
 Use version switch to control amforth version.
 Verson 2.9 and junger had a different header.
@@ -636,8 +636,8 @@ _: 0            _cr _."     .dw XT_ZERO "            _;
 _: 1ms          _cr _."     .dw XT_1MS "             _;
 _: ><           _cr _."     .dw XT_BYTESWAP "        _;
 _: cmove>       _cr _."     .dw XT_CMOVE> "          _;
-_: i!           _cr _."     .dw XT_ISTORE "          _;
-_: i@           _cr _."     .dw XT_IFETCH "          _;
+_: !i           _cr _."     .dw XT_STOREI "          _;
+_: @i           _cr _."     .dw XT_FETCHI "          _;
 _: unloop       _cr _."     .dw XT_UNLOOP "          _;
 _: i            _cr _."     .dw XT_I "               _;
 _: sp!          _cr _."     .dw XT_SP_STORE "        _;
@@ -685,8 +685,8 @@ _: c@           _cr _."     .dw XT_CFETCH "          _;
 _: c!           _cr _."     .dw XT_CSTORE "          _;
 _: !            _cr _."     .dw XT_STORE "           _;
 _: @            _cr _."     .dw XT_FETCH "           _;
-_: e@           _cr _."     .dw XT_EFETCH "          _;
-_: e!           _cr _."     .dw XT_ESTORE "          _;
+_: @e           _cr _."     .dw XT_FETCHE "          _;
+_: !e           _cr _."     .dw XT_STOREE "          _;
 _: execute      _cr _."     .dw XT_EXECUTE "         _;
 _: exit         _cr _."     .dw XT_EXIT "            _;
 _: -int         _cr _."     .dw XT_MINUSINT "        _;
