@@ -1,5 +1,7 @@
 0 [if] started 10/2008 mk. Use gforth to compile this tool. 
-Browse http://www.forth-ev.de/trac/wiki for latest version.  
+(Browse http://www.forth-ev.de/trac/wiki for latest version.
+ trac is not in use any more. Migrated to: 
+ http://www.forth-ev.de/repos/g4/  
 
 ************************ Macro assembler g4 *******************************
              Translating amforth source code into assembler (AVRA) 
@@ -16,7 +18,7 @@ Or type your definition manualy. You will see the conversion at once.
 (2) Include g4.fs in the forth source file1, then run it with gforth in terminal to get an assembler source file2. 
     ../michael$ gforth file1.txt  >  file2.asm 
 
-Here is a tiny example forth source file1 to ilustrate this:
+Here is a tiny example forth source file1 to illustrate this:
         include g4.fs
         _& ( set decimal )
         : print123 1 . 2 . 3 . ;
@@ -47,12 +49,12 @@ Will expand to:
 variable
 You may use it outside colon definition as usual:
         variable f1   10 allot 
-It will create f1 in instruction memory and allot 10 bytes of memory in ram past the positin f1 points to.
+It will create f1 in instruction memory and allot 10 bytes of memory in ram past the position f1 points to.
 
 create
 You may use it outside colon definition as usual:
         create f2  10 cells allot 
-It will create f2 in instruction memory and allot 10 cells of memory in ram past the positin f2 points to.
+It will create f2 in instruction memory and allot 10 cells of memory in ram past the positi0n f2 points to.
 
 [ ]
 To calculate values inside a definition, use [ ] as usual: 
@@ -67,7 +69,7 @@ If you use characters like ( ) ? ! @ ; , : in forth names you have to change the
 
 NOTES:
 Immediate words:  
-Use g4immediate-on in your source BEFOR the next : definition that has to beimmediate. G4 does not handel the forthstyle immediate following a definitions jet. 
+Use g4immediate-on in your source BEFOR the next : definition that has to be immediate. G4 does not handel the forthstyle immediate following a definition jet. 
 
 Use version switch to control amforth version.
 Verson 2.9 and junger had a different header.
@@ -77,7 +79,7 @@ amforth-3.1? ( -- f )
 Bugreport:
 A value gives XT_<value> which is ok.
 But the phrase  to <value>  is not ok.
-There 'to' is immediate and the following value must be in the wordlist, where
+'to' is immediate and the following value must be in the wordlist, where
 to will find out its address. That does not work in this forth-to assembler
 converter, because the address of the value is in eeprom and unknown to g4.
 You have to code those phrases manualy.

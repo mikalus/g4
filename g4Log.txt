@@ -1,3 +1,10 @@
+PowerBook:~/g4 michael$ svn ci -m "e! i! e@ i! umgedreht"
+Sending        g4.fs
+Sending        g4Log.txt
+Transmitting file data ..
+Committed revision 2467.
+PowerBook:~/g4 michael$ 
+
 PowerBook:~/g4 michael$ svn add g4w32f.fs 
 A         g4w32f.fs
 PowerBook:~/g4 michael$ svn ci -m "windows version added"
